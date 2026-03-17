@@ -25,10 +25,71 @@
       secretSubmit = document.getElementById('secret-submit'),
       finalVideoStage = document.getElementById('final-video-stage'),
       mainVideo = document.getElementById('main-video'),
+      mobileModal = document.getElementById('mobile-modal'),
+      mobileCopy = document.getElementById('mobile-copy'),
+      mobileContinue = document.getElementById('mobile-continue'),
+      mobileLinkEl = document.getElementById('mobile-link'),
       timer = null,
       bgm = $('bgm'),
       musicToggle = $('musicToggle'),
       effectsLayer = document.getElementById('effects-layer');
+
+  // Mobile hint popup (show once)
+  (function () {
+    if (!mobileModal) return;
+    var alreadyShown = false;
+    try {
+      alreadyShown = localStorage.getItem('anniv_mobile_hint_shown') === '1';
+    } catch (e) {}
+    if (alreadyShown) return;
+
+    var isMobileUa = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent || '');
+    var isSmallScreen = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+    var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+    var shouldShow = (isMobileUa || (isSmallScreen && isTouch));
+
+    if (!shouldShow) return;
+
+    mobileModal.classList.remove('hidden');
+    try {
+      localStorage.setItem('anniv_mobile_hint_shown', '1');
+    } catch (e) {}
+
+    var linkText = (mobileLinkEl && mobileLinkEl.textContent) ? mobileLinkEl.textContent.trim() : window.location.href;
+
+    function hide() {
+      mobileModal.classList.add('hidden');
+    }
+
+    if (mobileContinue) {
+      mobileContinue.addEventListener('click', hide);
+    }
+
+    if (mobileCopy) {
+      mobileCopy.addEventListener('click', function () {
+        var text = linkText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            mobileCopy.textContent = 'Copied!';
+            setTimeout(function () { mobileCopy.textContent = 'Copy link'; }, 1200);
+          }).catch(function () {});
+        } else {
+          // Fallback
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          mobileCopy.textContent = 'Copied!';
+          setTimeout(function () { mobileCopy.textContent = 'Copy link'; }, 1200);
+        }
+      });
+    }
+  })();
 
   function safePlayAt20Percent() {
     if (!bgm) return;

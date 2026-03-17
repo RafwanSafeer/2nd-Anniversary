@@ -285,6 +285,52 @@ p.signed {
   margin-bottom: 18px;
 }
 
+.mobile-link {
+  display: inline-block;
+  margin: 6px 0 2px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(244, 107, 138, 0.08);
+  border: 2px solid rgba(244, 107, 138, 0.22);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.95em;
+  word-break: break-word;
+  color: #6b2333;
+}
+
+.mobile-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.mobile-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-family: 'Indie Flower', cursive;
+  font-weight: 800;
+  font-size: 1em;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 10px 28px rgba(107, 35, 51, 0.14);
+  color: #6b2333;
+}
+
+.mobile-btn.primary {
+  background: linear-gradient(135deg, #f46b8a, #f78aac);
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(244, 107, 138, 0.45);
+}
+
+.mobile-btn:hover,
+.mobile-btn:focus {
+  outline: none;
+  transform: translateY(-1px);
+}
+
 .quiz-grid {
   display: flex;
   flex-wrap: wrap;
