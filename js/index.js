@@ -27,7 +27,6 @@
       mainVideo = document.getElementById('main-video'),
       mobileModal = document.getElementById('mobile-modal'),
       mobileCopy = document.getElementById('mobile-copy'),
-      mobileContinue = document.getElementById('mobile-continue'),
       mobileLinkEl = document.getElementById('mobile-link'),
       timer = null,
       bgm = $('bgm'),
@@ -56,14 +55,6 @@
     } catch (e) {}
 
     var linkText = (mobileLinkEl && mobileLinkEl.textContent) ? mobileLinkEl.textContent.trim() : window.location.href;
-
-    function hide() {
-      mobileModal.classList.add('hidden');
-    }
-
-    if (mobileContinue) {
-      mobileContinue.addEventListener('click', hide);
-    }
 
     if (mobileCopy) {
       mobileCopy.addEventListener('click', function () {

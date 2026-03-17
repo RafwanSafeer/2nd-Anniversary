@@ -319,12 +319,6 @@ p.signed {
   color: #6b2333;
 }
 
-.mobile-btn.primary {
-  background: linear-gradient(135deg, #f46b8a, #f78aac);
-  color: #fff;
-  box-shadow: 0 14px 30px rgba(244, 107, 138, 0.45);
-}
-
 .mobile-btn:hover,
 .mobile-btn:focus {
   outline: none;
