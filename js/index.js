@@ -297,34 +297,78 @@
     if (!canvas) return;
     var ctx = canvas.getContext('2d');
 
-    var tileSize = 30;
-    var rows = 18;
-    var cols = 30;
+    // Bigger, wider maze (more branches & dead-ends)
+    var tileSize = 26;
+    var rows = 21;
+    var cols = 55;
+
+    function generateMaze(r, c) {
+      // Ensure odd dimensions for clean corridors
+      if (r % 2 === 0) r += 1;
+      if (c % 2 === 0) c += 1;
+
+      var grid = Array.from({ length: r }, function () {
+        return Array.from({ length: c }, function () { return 1; }); // 1 = wall
+      });
+
+      function inBounds(x, y) {
+        return x > 0 && y > 0 && x < c - 1 && y < r - 1;
+      }
+
+      function shuffle(arr) {
+        for (var i = arr.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = tmp;
+        }
+        return arr;
+      }
+
+      function carve(x, y) {
+        grid[y][x] = 0; // floor
+        var dirs = shuffle([
+          [2, 0],
+          [-2, 0],
+          [0, 2],
+          [0, -2]
+        ]);
+        for (var i = 0; i < dirs.length; i++) {
+          var dx = dirs[i][0];
+          var dy = dirs[i][1];
+          var nx = x + dx;
+          var ny = y + dy;
+          if (!inBounds(nx, ny)) continue;
+          if (grid[ny][nx] === 1) {
+            // Knock down wall between
+            grid[y + dy / 2][x + dx / 2] = 0;
+            carve(nx, ny);
+          }
+        }
+      }
+
+      carve(1, 1);
+
+      // Keep a solid border
+      for (var yy = 0; yy < r; yy++) {
+        grid[yy][0] = 1;
+        grid[yy][c - 1] = 1;
+      }
+      for (var xx = 0; xx < c; xx++) {
+        grid[0][xx] = 1;
+        grid[r - 1][xx] = 1;
+      }
+
+      return { grid: grid, rows: r, cols: c };
+    }
+
+    var generated = generateMaze(rows, cols);
+    var maze = generated.grid;
+    rows = generated.rows;
+    cols = generated.cols;
 
     canvas.width = cols * tileSize;
     canvas.height = rows * tileSize;
-
-    var maze = [
-      // 0 = floor, 1 = wall
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
-      [1,0,1,1,1,0,1,1,0,1,0,1,1,1,0,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1],
-      [1,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,1],
-      [1,1,1,0,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1],
-      [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
-      [1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,1,0,1,1,1,1,0,1,1,0,1,1,1,0,1],
-      [1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,1],
-      [1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,0,1,0,1,1,1,1,0,1,1,0,1,0,1],
-      [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
-      [1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1,1,0,1],
-      [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1],
-      [1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-    ];
 
     var player = {x:1, y:1};
 
@@ -348,7 +392,11 @@
 
     var heart = {x:heartPos.x, y:heartPos.y, collected:false};
     var key = {x:keyPos.x, y:keyPos.y, collected:false};
-    var chest = {x:Math.floor(cols/2), y:rows-2};
+    // Place chest near the middle-bottom-ish on a floor tile.
+    var chestPos = randomFloor(function (x, y) {
+      return Math.abs(x - Math.floor(cols / 2)) < Math.floor(cols / 6) && y > Math.floor(rows / 2);
+    });
+    var chest = { x: chestPos.x, y: chestPos.y };
 
     var imgPlayer = new Image();
     var imgHeart = new Image();
@@ -414,6 +462,9 @@
     function movePlayer(dx, dy){
       var newX = player.x + dx;
       var newY = player.y + dy;
+      if (newY < 0 || newY >= rows || newX < 0 || newX >= cols) {
+        return;
+      }
       if(maze[newY][newX]===0){
         player.x = newX;
         player.y = newY;
@@ -493,6 +544,10 @@
       passwordModal.classList.add('hidden');
       finalVideoStage.classList.remove('hidden');
       secretInput.classList.remove('error');
+      if (bgm && !bgm.paused) {
+        bgm.pause();
+      }
+      updateMusicUi();
       if (mainVideo) {
         mainVideo.play().catch(function () {});
       }
