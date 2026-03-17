@@ -470,6 +470,13 @@ p.signed {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
   align-items: center;
+  justify-items: center;
+}
+
+/* In the split photo/video stage, keep both media centered */
+.photo-grid .anniv-video {
+  width: 100%;
+  max-width: 420px;
 }
 
 .reward-photo {
